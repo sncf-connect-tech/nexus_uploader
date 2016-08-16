@@ -3,7 +3,7 @@
 import os, sys
 from setuptools import setup, find_packages
 
-version = '1.0'
+version = '1.0.0'
 setup_requires = []
 
 if 'nexus_upload' in sys.argv:
@@ -17,11 +17,17 @@ if '--snapshot' in sys.argv:
 with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'requirements.txt')) as file_requirements:
     requirements = file_requirements.readlines()
 
+try:
+    import pypandoc
+    long_description = pypandoc.convert('README.md', 'rst')
+except ImportError:
+    long_description = open('README.md').read()
+
 setup(
     name='nexus_uploader',
     description='CLI tool to upload Python packages listed in a requirements.txt file into a Sonatype Nexus (from Pypi), and return the list of the artifact URLs',
+    long_description=open('README.md').read(),
     author='Lucas Cimon',
-    author_email='LCimon@voyages-sncf.com',
     url='http://github.com/voyages-sncf-technologies/nexus_uploader',
     install_requires=requirements,
     packages=find_packages(),
@@ -29,12 +35,16 @@ setup(
     setup_requires=setup_requires,
     classifiers=[
         'Intended Audience :: Developers',
+        'Development Status :: 5 - Production/Stable',
+        'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
+        'Operating System :: OS Independent',
         'Topic :: Utilities',
     ],
-    keywords="nexus artifacts packages upload requirements pip-compile",
+    keywords='nexus artifacts packages upload requirements pip-compile',
+    license='Apache License 2.0',
     include_package_data=True,  # Active la prise en compte du fichier MANIFEST.in
     entry_points={
         'console_scripts': ['pyRequirements2nexus = nexus_uploader.pyrequirements2nexus:main'],

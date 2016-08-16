@@ -18,4 +18,4 @@
         args:
         - --rcfile=.pylintrc
         - --reports=no
-        files: /.+\.py$
+        files: \.py$

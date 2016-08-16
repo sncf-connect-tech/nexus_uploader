@@ -1,3 +1,6 @@
+[![](https://img.shields.io/voyages-sncf-technologies/v/nexus_uploader.svg?style=flat)](https://pypi.python.org/pypi/nexus_uploader)
+[![](https://img.shields.io/voyages-sncf-technologies/l/nexus_uploader.svg?style=flat)](https://pypi.python.org/pypi/nexus_uploader)
+
 Python tools to help with the development & deployment of company-private Python packages.
 
 It was developped to use Sonatype Nexus as a private Pypi mirror (until [it supports this natively](https://issues.sonatype.org/browse/NEXUS-6037)),
@@ -9,7 +12,7 @@ It is composed of 2 distincts :
 - `pyRequirements2nexus` : a CLI tool to convert standard Python `requirements.txt` into `nexus-requirements.txt` files,
 made of URLs pointing to installable packages that `pyRequirements2nexus` mirrored on your Nexus.
 
-![](https://raw.githubusercontent.com/voyages-sncf-technologies/nexus_uploader/master/PythonPackaging.png)
+![](https://raw.githubusercontent.com/voyages-sncf-technologies/nexus_uploader/master/docs/PythonPackaging.png)
 
 # Features
 
