@@ -1,5 +1,5 @@
-[![](https://img.shields.io/voyages-sncf-technologies/v/nexus_uploader.svg?style=flat)](https://pypi.python.org/pypi/nexus_uploader)
-[![](https://img.shields.io/voyages-sncf-technologies/l/nexus_uploader.svg?style=flat)](https://pypi.python.org/pypi/nexus_uploader)
+[![](https://img.shields.io/pypi/v/nexus_uploader.svg?style=flat)](https://pypi.python.org/pypi/nexus_uploader)
+[![](https://img.shields.io/pypi/l/nexus_uploader.svg?style=flat)](https://pypi.python.org/pypi/nexus_uploader)
 
 Python tools to help with the development & deployment of company-private Python packages.
 
