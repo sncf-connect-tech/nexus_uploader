@@ -1,0 +1,11 @@
+[BASIC]
+good-names=_,logger,xfail
+# We extend the characters limit from 30 to 40 for function names
+function-rgx = [a-z_][a-z0-9_]{2,40}$
+# We extend the characters limit from 30 to 40 for method names
+method-rgx = [a-z_][a-z0-9_]{2,40}$
+# We extend the characters limit from 30 to 40 for argument names
+argument-rgx=[a-z_][a-z0-9_]{2,40}$
+
+[MESSAGES CONTROL]
+disable = attribute-defined-outside-init, bad-continuation, fixme, import-error, line-too-long, missing-docstring, multiple-imports, no-name-in-module, too-few-public-methods, ungrouped-imports

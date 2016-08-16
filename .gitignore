@@ -1,0 +1,7 @@
+__pycache__/
+*-requirements.txt
+
+.eggs/
+*.egg-info/
+
+/dist/
