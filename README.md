@@ -82,6 +82,8 @@ You should always use the flat `nexus-requirements.txt` with `pip install`.
     pip install nexus_uploader
     pyRequirements2nexus --help
 
+Also take a look at `jenkins-install-python-requirements.sh` for an example of how we use it on our Jenkins.
+
 
 # Installation of nexus-requirements.txt on an end machine
 
