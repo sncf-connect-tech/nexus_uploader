@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os, sys
+import os, pypandoc, sys
 from setuptools import setup, find_packages
 
 version = '1.0.2'
@@ -17,16 +17,10 @@ if '--snapshot' in sys.argv:
 with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'requirements.txt')) as file_requirements:
     requirements = file_requirements.readlines()
 
-try:
-    import pypandoc
-    long_description = pypandoc.convert('README.md', 'rst')
-except ImportError:
-    long_description = open('README.md').read()
-
 setup(
     name='nexus_uploader',
     description='CLI tool to upload Python packages listed in a requirements.txt file into a Sonatype Nexus (from Pypi), and return the list of the artifact URLs',
-    long_description=long_description,
+    long_description=pypandoc.convert('README.md', 'rst'),
     author='Lucas Cimon',
     url='http://github.com/voyages-sncf-technologies/nexus_uploader',
     install_requires=requirements,

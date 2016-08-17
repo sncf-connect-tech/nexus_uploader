@@ -22,7 +22,7 @@ if ! [ -s requirements.txt ]; then
     exit 1
 fi
 
-pip install -e $SCRIPT_DIR
+pip install nexus_uploader
 
 pyRequirements2nexus --debug --nexus-url=http://nexus --artifact-group 'com.vsct.pip' --default-packages "$DEFAULTS_PKGS_FILE" --in-reqfile requirements.txt --out-reqfile nexus-requirements.txt
 
