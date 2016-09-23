@@ -3,7 +3,7 @@
 import os, pypandoc, sys
 from setuptools import setup, find_packages
 
-version = '1.0.2'
+version = '1.0.3'
 setup_requires = []
 
 if 'nexus_upload' in sys.argv:

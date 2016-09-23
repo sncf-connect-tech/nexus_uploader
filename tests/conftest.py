@@ -8,22 +8,20 @@ def pytest_addoption(parser):
 # Except from FakePackageFinder, everything under this is copied from: https://raw.githubusercontent.com/nvie/pip-tools/1.6.5/tests/conftest.py
 
 import json
-from functools import partial
 
 from pip._vendor.packaging.version import Version
-from pip._vendor.pkg_resources import Requirement
 from pip.index import FormatControl
 from pip.req import InstallRequirement
 from pytest import fixture
 
-from piptools.cache import DependencyCache
 from piptools.repositories.base import BaseRepository
-from piptools.resolver import Resolver
 from piptools.utils import as_tuple, make_install_requirement
 
 
-class FakePackageFinder:
-    format_control = FormatControl(set(), set())
+@fixture
+def repository():
+    return FakeRepository()
+
 
 class FakeRepository(BaseRepository):
     finder = FakePackageFinder()
@@ -54,59 +52,5 @@ class FakeRepository(BaseRepository):
         return [InstallRequirement.from_line(dep) for dep in dependencies]
 
 
-class FakeInstalledDistribution(object):
-    def __init__(self, line, deps=None):
-        if deps is None:
-            deps = []
-        self.deps = [Requirement.parse(d) for d in deps]
-
-        self.req = Requirement.parse(line)
-
-        self.key = self.req.key
-        self.specifier = self.req.specifier
-
-        self.version = line.split('==')[1]
-
-    def requires(self):
-        return self.deps
-
-    def as_requirement(self):
-        return self.req
-
-
-@fixture
-def fake_dist():
-    return FakeInstalledDistribution
-
-
-@fixture
-def repository():
-    return FakeRepository()
-
-
-@fixture
-def depcache(tmpdir):
-    return DependencyCache(str(tmpdir))
-
-
-@fixture
-def resolver(depcache, repository):
-    # TODO: It'd be nicer if Resolver instance could be set up and then
-    #       use .resolve(...) on the specset, instead of passing it to
-    #       the constructor like this (it's not reusable)
-    return partial(Resolver, repository=repository, cache=depcache)
-
-
-@fixture
-def base_resolver(depcache):
-    return partial(Resolver, cache=depcache)
-
-
-@fixture
-def from_line():
-    return InstallRequirement.from_line
-
-
-@fixture
-def from_editable():
-    return InstallRequirement.from_editable
+class FakePackageFinder:
+    format_control = FormatControl(set(), set())
