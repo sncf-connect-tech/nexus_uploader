@@ -11,10 +11,10 @@ def test_pipcompile_with_real_repository():
     assert len(nexus_requirements) == 6
 
 
-def test_pipcompile_with_mocked_repository(repository):
-    with patch('nexus_uploader.pip_compile.LocalRequirementsRepository', new=lambda **kwargs: repository):
-        assert read_requirements(pip_compile(['ipython'], 'dummy-nexus.wtf', raise_if_called)) == \
-            [('version-locked', ('gnureadline', '6.3.3', 'via ipython')), ('version-locked', ('ipython', '2.1.0', ''))]
+def test_pipcompile_with_mocked_repository(FakePypiRepository):
+    with patch('nexus_uploader.pip_compile.PyPIRepository', FakePypiRepository):
+        assert read_requirements(pip_compile(['pytest'], 'dummy-nexus.wtf', raise_if_called)) == \
+            [('version-locked', ('py', '1.4.31', 'via pytest')), ('version-locked', ('pytest', '3.0.2', ''))]
 
 
 def raise_if_called(*args, **kwargs):

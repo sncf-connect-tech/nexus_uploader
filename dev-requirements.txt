@@ -1,5 +1,5 @@
 pre-commit
 pypandoc
-pytest
+pytest==3.0.2
 pytest-cov
 pytest-pythonpath

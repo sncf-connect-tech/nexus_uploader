@@ -19,14 +19,21 @@ from piptools.utils import as_tuple, make_install_requirement
 
 
 @fixture
-def repository():
-    return FakeRepository()
+def FakePypiRepository(tmpdir):
+    FakeRepository.source_dir = str(tmpdir)
+    return FakeRepository
+
+
+class FakePackageFinder:
+    format_control = FormatControl(set(), set())
 
 
 class FakeRepository(BaseRepository):
     finder = FakePackageFinder()
+    source_dir = None
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+
         with open('tests/fixtures/fake-index.json', 'r') as f:
             self.index = json.load(f)
 
@@ -50,7 +57,3 @@ class FakeRepository(BaseRepository):
         extras = ireq.extras + ('',)
         dependencies = [dep for extra in extras for dep in self.index[name][version][extra]]
         return [InstallRequirement.from_line(dep) for dep in dependencies]
-
-
-class FakePackageFinder:
-    format_control = FormatControl(set(), set())

@@ -66,7 +66,7 @@ def _pip_compile(constraints, nexus_hostname, append_egg_hash_to_url_if_need_be,
     class CustomPyPIRepository(PyPIRepository):
         def get_dependencies(self, ireq):
             # Overrides PyPIRepository.get_dependencies
-            dependencies = super().get_dependencies(ireq)
+            dependencies = set(super().get_dependencies(ireq))
             dependency_links = self.get_dependency_links(ireq)
             dependency_links = [append_egg_hash_to_url_if_need_be(url) for url in dependency_links]
             dependency_links = [url for url in dependency_links if url]
@@ -79,6 +79,7 @@ def _pip_compile(constraints, nexus_hostname, append_egg_hash_to_url_if_need_be,
 
         def get_dependency_links(self, ireq):
             # Reproduce pip.req.req_set.RequirementSet._prepare_file code
+            ireq.check_if_exists()
             if ireq.satisfied_by is not None:
                 abstract_dist = Installed(ireq)
             else:
