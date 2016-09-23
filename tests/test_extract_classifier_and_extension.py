@@ -1,4 +1,4 @@
-from pyrequirements2nexus import extract_classifier_and_extension
+from nexus_uploader.pypi import extract_classifier_and_extension
 try:
     import pytest
     xfail = pytest.mark.xfail

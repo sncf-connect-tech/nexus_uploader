@@ -1,2 +1,5 @@
 pre-commit
 pypandoc
+pytest
+pytest-cov
+pytest-pythonpath

@@ -143,7 +143,7 @@ EOF
 ```
 
 
-## How to generate a "--default-packages" file out from an Anaconda .sh installer
+## How to generate a "--default-packages" file out of an Anaconda .sh installer
 
     grep -aF 'extract_dist ' Anaconda3-2.4.1-Linux-x86_64.sh \
         | perl -p -e 's/extract_dist (.+?[0-9])[^.]*$/\1\n/;' -e 's/^(.+)-(.+)$/\1 == \2/;' \

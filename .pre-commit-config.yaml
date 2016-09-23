@@ -1,6 +1,11 @@
 -   repo: git://github.com/pre-commit/pre-commit-hooks
     sha: 775a7906cd6004bec2401a85ed16d5b3540d2f94
     hooks:
+    -   id: check-merge-conflict
+    # for Python:
+    -   id: debug-statements
+    # for Python:
+    -   id: double-quote-string-fixer
     -   id: trailing-whitespace
         args:
         - --no-markdown-linebreak-ext
@@ -18,4 +23,11 @@
         args:
         - --rcfile=.pylintrc
         - --reports=no
-        files: \.py$
+        files: ^nexus_uploader/.+\.py$
+-   repo: local
+    hooks:
+    -   id: py.test
+        name: py.test
+        language: system
+        entry: sh -c py.test
+        files: ''

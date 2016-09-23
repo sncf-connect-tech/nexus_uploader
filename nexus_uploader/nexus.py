@@ -1,20 +1,20 @@
 #
-# Copyright (C) 2016 VSCT  
+# Copyright (C) 2016 VSCT
 #
-# Licensed under the Apache License, Version 2.0 (the "License"); 
-# you may not use this file except in compliance with the License.  
-# You may obtain a copy of the License at 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# http://www.apache.org/licenses/LICENSE-2.0  
+# http://www.apache.org/licenses/LICENSE-2.0
 #
-# Unless required by applicable law or agreed to in writing, software  
-# distributed under the License is distributed on an "AS IS" BASIS, 
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-# See the License for the specific language governing permissions and 
-# limitations under the License. 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 #
 
-"Code to interact with Sonatype Nexus"
+'Code to interact with Sonatype Nexus'
 
 import logging, re, requests
 
@@ -82,13 +82,13 @@ class NexusRepositoryClient:
 
     @staticmethod
     def pkg_name_version_from_artifact_url(artifact_url):
-        "Returns a (pkg_name, pkg_version) tuple"
+        'Returns a (pkg_name, pkg_version) tuple'
         return artifact_url.split('/')[-3:-1]
 
     def append_egg_hash_if_nexus_url(self, url):
         if url.startswith(self.base_url) and '#egg=' not in url:
             return url + '#egg={}=={}'.format(*self.pkg_name_version_from_artifact_url(url))
-        return None
+        return url
 
     @staticmethod
     @aslist
