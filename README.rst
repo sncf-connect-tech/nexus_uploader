@@ -19,7 +19,7 @@ It is composed of 2 distincts :
    mirrored on your Nexus.
 
 .. figure:: https://raw.githubusercontent.com/voyages-sncf-technologies/nexus_uploader/master/docs/PythonPackaging.png
-   :alt: 
+   :alt:
 
 Features
 ========

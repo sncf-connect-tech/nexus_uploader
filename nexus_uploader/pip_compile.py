@@ -58,6 +58,8 @@ def _pip_compile(constraints, nexus_hostname, append_egg_hash_to_url_if_need_be,
             # Overrides Resolver._iter_dependencies
             # We use our cached InstallRequirements that have a .link, instead of the new ones built by piptools.resolver.Resolver._iter_dependencies
             for dep_ireq in super()._iter_dependencies(ireq):
+                if str(dep_ireq.req) == 'setuptools':
+                    continue
                 if str(dep_ireq.req) in dependency_links_requirements:
                     yield dependency_links_requirements[str(dep_ireq.req)]
                 else:
