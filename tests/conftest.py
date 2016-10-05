@@ -1,3 +1,12 @@
+import json
+
+from pip._vendor.packaging.version import Version
+from pip.index import FormatControl
+from pip.req import InstallRequirement
+
+from piptools.repositories.base import BaseRepository
+from piptools.utils import as_tuple, make_install_requirement
+
 import pytest
 
 
@@ -5,20 +14,7 @@ def pytest_addoption(parser):
     parser.addoption('--run-pypi-integration-tests', action='store_true')
 
 
-# Except from FakePackageFinder, everything under this is copied from: https://raw.githubusercontent.com/nvie/pip-tools/1.6.5/tests/conftest.py
-
-import json
-
-from pip._vendor.packaging.version import Version
-from pip.index import FormatControl
-from pip.req import InstallRequirement
-from pytest import fixture
-
-from piptools.repositories.base import BaseRepository
-from piptools.utils import as_tuple, make_install_requirement
-
-
-@fixture
+@pytest.fixture
 def FakePypiRepository(tmpdir):
     FakeRepository.source_dir = str(tmpdir)
     return FakeRepository
@@ -28,12 +24,11 @@ class FakePackageFinder:
     format_control = FormatControl(set(), set())
 
 
-class FakeRepository(BaseRepository):
+class FakeRepository(BaseRepository):  # Heavily inspired by: https://raw.githubusercontent.com/nvie/pip-tools/1.6.5/tests/conftest.py
     finder = FakePackageFinder()
     source_dir = None
 
     def __init__(self, *args, **kwargs):
-
         with open('tests/fixtures/fake-index.json', 'r') as f:
             self.index = json.load(f)
 

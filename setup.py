@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
-import os, pypandoc, sys
+import sys
+from os import path
 from setuptools import setup, find_packages
 
-version = '1.0.3'
+version = '1.0.5'
 setup_requires = []
 
 if 'nexus_upload' in sys.argv:
@@ -14,19 +15,25 @@ if '--snapshot' in sys.argv:
     sys.argv.remove('--snapshot')
     version += '-SNAPSHOT'
 
-with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'requirements.txt')) as file_requirements:
-    requirements = file_requirements.readlines()
+here = path.abspath(path.dirname(__file__))
+
+with open(path.join(here, 'README.rst'), encoding='utf-8') as long_desc_file:
+    long_description = long_desc_file.read()
+
+with open(path.join(here, 'requirements.txt')) as requirements_file:
+    requirements = requirements_file.readlines()
 
 setup(
     name='nexus_uploader',
     description='CLI tool to upload Python packages listed in a requirements.txt file into a Sonatype Nexus (from Pypi), and return the list of the artifact URLs',
-    long_description=pypandoc.convert('README.md', 'rst'),
+    long_description=long_description,
     author='Lucas Cimon',
     url='http://github.com/voyages-sncf-technologies/nexus_uploader',
     install_requires=requirements,
     packages=find_packages(),
     version=version,
     setup_requires=setup_requires,
+    zip_safe=True,  # http://peak.telecommunity.com/DevCenter/setuptools#setting-the-zip-safe-flag
     classifiers=[
         'Intended Audience :: Developers',
         'Development Status :: 5 - Production/Stable',
