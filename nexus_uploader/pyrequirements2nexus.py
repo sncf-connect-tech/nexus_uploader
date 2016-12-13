@@ -48,7 +48,7 @@ def main(argv=sys.argv[1:]):
                 out_reqfile_content.write(requirement_url + (' # ' + comment if comment else '') + '\n')
             elif req_type == 'version-locked':
                 pkg_name, pkg_version, comment = req_info
-                nexus_artifact_url = nexus_client.upload_from_pypi_if_need_be(pkg_name, pkg_version)
+                nexus_artifact_url = nexus_client.upload_from_pypi_if_need_be(pkg_name, pkg_version, args.pypi_json_api_url)
                 out_reqfile_content.write(nexus_artifact_url + (' # ' + comment if comment else '') + '\n')
 
 def parse_args(argv):
@@ -57,6 +57,7 @@ def parse_args(argv):
     parser.add_argument('--nexus-url', required=True, help=' ')
     parser.add_argument('--artifact-group', required=True, help=' ')
     parser.add_argument('--repo-id', default='pip', help=' ')
+    parser.add_argument('--pypi-json-api-url', default='http://pypi.python.org/pypi/{}/json', help=' ')
     parser.add_argument('--default-packages', help='File containing a requirements.txt-style list of Python packages already included in the base environment')
     parser.add_argument('--user', help='A prompt will ask for your password - Else use environment variables REPOSITORY_USER / REPOSITORY_PASSWORD')
     parser.add_argument('--in-reqfile', default='requirements.txt')

@@ -37,7 +37,7 @@ class NexusRepositoryClient:
         self.auth = auth
         self._session = requests.session()
 
-    def upload_from_pypi_if_need_be(self, pkg_name, pkg_version):
+    def upload_from_pypi_if_need_be(self, pkg_name, pkg_version, pypi_json_api_url):
         logger.debug('Checking for Python package %s version %s in Nexus', pkg_name, pkg_version)
         matching_artifacts = self.find_artifacts(pkg_name, pkg_version)
         if matching_artifacts:
@@ -49,7 +49,7 @@ class NexusRepositoryClient:
             return matching_artifacts[0]
         else:
             logger.debug('Retrieving release for Python package %s version %s from Pypi', pkg_name, pkg_version)
-            pkg_release = get_package_release_from_pypi(pkg_name, pkg_version)
+            pkg_release = get_package_release_from_pypi(pkg_name, pkg_version, pypi_json_api_url)
 
             response = requests.get(pkg_release['url'])
             response.raise_for_status()

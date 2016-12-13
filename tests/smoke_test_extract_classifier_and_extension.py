@@ -17,7 +17,7 @@ def random_packages_releases(random_releases_count):
     while i < random_releases_count:
         pkg_name = random.choice(all_pypi_packages)
         try:
-            pkg_releases = get_package_releases(pkg_name)
+            pkg_releases = get_package_releases(pkg_name, 'http://pypi.python.org/pypi/{}/json')
         except requests.HTTPError:
             print('!!! WARNING: No release found for package name ', pkg_name)
             continue

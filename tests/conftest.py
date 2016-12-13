@@ -24,7 +24,11 @@ class FakePackageFinder:
     format_control = FormatControl(set(), set())
 
 
-class FakeRepository(BaseRepository):  # Heavily inspired by: https://raw.githubusercontent.com/nvie/pip-tools/1.6.5/tests/conftest.py
+class FakeRepository(BaseRepository):
+    """
+    Mock for pip_compile.PyPIRepository
+    Heavily inspired by: https://raw.githubusercontent.com/nvie/pip-tools/1.6.5/tests/conftest.py
+    """
     finder = FakePackageFinder()
     source_dir = None
 

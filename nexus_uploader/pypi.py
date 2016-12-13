@@ -22,15 +22,15 @@ import requests
 class PypiQueryError(Exception):
     pass
 
-def get_package_release_from_pypi(pkg_name, version):
+def get_package_release_from_pypi(pkg_name, version, pypi_json_api_url):
     """
     No classifier-based selection of Python packages is currently implemented: for now we don't fetch any .whl or .egg
     Eventually, we should select the best release available, based on the classifier & PEP 425.
     E.g. a wheel when available but NOT for tornado 4.3 for example, where available wheels are only for Windows.
     Note also that some packages don't have .whl distributed, e.g. https://bugs.launchpad.net/lxml/+bug/1176147
     """
-    matching_releases = get_package_releases_matching_version(pkg_name, version)
-    src_releases = [release for release in matching_releases if release['python_version'] == 'source']
+    matching_releases = get_package_releases_matching_version(pkg_name, version, pypi_json_api_url)
+    src_releases = [release for release in matching_releases if release['python_version'] in ('any', 'source')]
     if not src_releases:
         raise PypiQueryError('No source distribution found for package {} version {}'.format(pkg_name, version))
     for release in src_releases:
@@ -40,14 +40,14 @@ def get_package_release_from_pypi(pkg_name, version):
     except StopIteration:
         return src_releases[0]
 
-def get_package_releases_matching_version(pkg_name, version):
-    releases = get_package_releases(pkg_name)
+def get_package_releases_matching_version(pkg_name, version, pypi_json_api_url):
+    releases = get_package_releases(pkg_name, pypi_json_api_url)
     if version not in releases:
         raise PypiQueryError('Version {} of package {} not found in Pypi. Available versions: {}', version, pkg_name, ','.join(releases.keys()))
     return releases[version]
 
-def get_package_releases(pkg_name):
-    response = requests.get('http://pypi.python.org/pypi/{}/json'.format(pkg_name))
+def get_package_releases(pkg_name, pypi_json_api_url):
+    response = requests.get(pypi_json_api_url.format(pkg_name))
     response.raise_for_status()
     return response.json()['releases']
 
