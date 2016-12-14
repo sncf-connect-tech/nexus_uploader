@@ -142,13 +142,13 @@ Unit tests:
 
 ::
 
-    PYTHONPATH=. py.test tests/
+    py.test tests/
 
 Smoke tests using Pypi:
 
 ::
 
-    PYTHONPATH=. ipython3 --pdb tests/smoke_test_extract_classifier_and_extension.py 200
+    ipython3 --pdb tests/smoke_test_extract_classifier_and_extension.py 200
 
 FAQ
 ===
