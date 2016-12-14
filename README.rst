@@ -1,4 +1,4 @@
-|image0| |image1|
+|pypi_version_img| |pypi_license_img| |travis_build_status|
 
 Python tools to help with the development & deployment of
 company-private Python packages.
@@ -208,7 +208,9 @@ ToDo
 -  classifier-based selection of Python packages
 -  add support for md5 & sha1 upload/checks
 
-.. |image0| image:: https://img.shields.io/pypi/v/nexus_uploader.svg?style=flat
+.. |pypi_version_img| image:: https://img.shields.io/pypi/v/nexus_uploader.svg?style=flat
    :target: https://pypi.python.org/pypi/nexus_uploader
-.. |image1| image:: https://img.shields.io/pypi/l/nexus_uploader.svg?style=flat
+.. |pypi_license_img| image:: https://img.shields.io/pypi/l/nexus_uploader.svg?style=flat
    :target: https://pypi.python.org/pypi/nexus_uploader
+.. |travis_build_status| image:: https://travis-ci.org/voyages-sncf-technologies/nexus_uploader.svg?branch=master
+    :target: https://travis-ci.org/voyages-sncf-technologies/nexus_uploader
