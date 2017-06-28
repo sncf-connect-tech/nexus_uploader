@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 
 #
-# Copyright (C) 2016 VSCT  
+# Copyright (C) 2016 VSCT
 #
-# Licensed under the Apache License, Version 2.0 (the "License"); 
-# you may not use this file except in compliance with the License.  
-# You may obtain a copy of the License at 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# http://www.apache.org/licenses/LICENSE-2.0  
+# http://www.apache.org/licenses/LICENSE-2.0
 #
-# Unless required by applicable law or agreed to in writing, software  
-# distributed under the License is distributed on an "AS IS" BASIS, 
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-# See the License for the specific language governing permissions and 
-# limitations under the License. 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 #
 
 # INSTALL: pip install pip-tools requests (the former is needed to get the pip-compile command)
@@ -26,13 +26,13 @@ from .pip_compile import pip_compile
 from .requirements import read_requirements, requirements2reqfile_lines, subst_editable_pkg_fallback, filter_out_provided_requirements
 
 
-def main(argv=sys.argv[1:]):
-    args = parse_args(argv)
+def main(argv=None):
+    args = parse_args(argv or sys.argv[1:])
     if args.debug:
         logging.basicConfig(level=logging.DEBUG, stream=sys.stderr,
-            format="%(asctime)s - pid:%(process)s %(filename)s:%(lineno)d [%(levelname)s] %(message)s")
+            format='%(asctime)s - pid:%(process)s %(filename)s:%(lineno)d [%(levelname)s] %(message)s')
     else:
-        logging.basicConfig(level=logging.INFO, stream=sys.stderr, format="%(message)s")
+        logging.basicConfig(level=logging.INFO, stream=sys.stderr, format='%(message)s')
     nexus_client = NexusRepositoryClient(base_url=args.nexus_url, repo_id=args.repo_id, artifact_group=args.artifact_group.replace('.', '/'), auth=(args.user, args.password))
     with open(args.in_reqfile, 'r') as in_reqfile_content:
         requirements = read_requirements(in_reqfile_content.readlines())

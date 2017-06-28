@@ -7,4 +7,4 @@ install:
   - pip install .
   - pip install -r dev-requirements.txt
 # command to run tests
-script: pytest
+script: pre-commit run --all-files

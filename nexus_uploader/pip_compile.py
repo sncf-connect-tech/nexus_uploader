@@ -1,17 +1,17 @@
 #
-# Copyright (C) 2016 VSCT  
+# Copyright (C) 2016 VSCT
 #
-# Licensed under the Apache License, Version 2.0 (the "License"); 
-# you may not use this file except in compliance with the License.  
-# You may obtain a copy of the License at 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# http://www.apache.org/licenses/LICENSE-2.0  
+# http://www.apache.org/licenses/LICENSE-2.0
 #
-# Unless required by applicable law or agreed to in writing, software  
-# distributed under the License is distributed on an "AS IS" BASIS, 
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-# See the License for the specific language governing permissions and 
-# limitations under the License. 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 #
 # pylint: disable=deprecated-module
 
@@ -86,6 +86,7 @@ def _pip_compile(constraints, nexus_hostname, append_egg_hash_to_url_if_need_be,
                 abstract_dist = Installed(ireq)
             else:
                 ireq.ensure_has_source_dir(self.source_dir)
+                ireq.populate_link(self.finder, upgrade=False, require_hashes=False)
                 assert ireq.link
                 unpack_url(ireq.link, ireq.source_dir, self._download_dir, only_download=True, session=self.session)
                 abstract_dist = make_abstract_dist(ireq)
@@ -109,14 +110,14 @@ def _pip_compile(constraints, nexus_hostname, append_egg_hash_to_url_if_need_be,
     out_reqfile_lines = _capture_annotated_out_reqlines(results, resolver=resolver, constraints=constraints, format_control=repository.finder.format_control)
 
     for requirement in out_reqfile_lines:
-        comment = ''
+        eol_comment = ''
         if ' #' in requirement and not requirement.startswith('#'):
-            requirement, comment = requirement.split(' #')
-        requirement, comment = requirement.strip(), comment.strip()
+            requirement, eol_comment = requirement.split(' #')
+        requirement, eol_comment = requirement.strip(), eol_comment.strip()
         if requirement in dependency_links_requirements:
-            yield dependency_links_requirements[requirement].link.url + (' # ' + comment if comment else '')
+            yield dependency_links_requirements[requirement].link.url + (' # ' + eol_comment if eol_comment else '')
         else:
-            yield requirement + (' # ' + comment if comment else '')
+            yield requirement + (' # ' + eol_comment if eol_comment else '')
 
 def _constraints_from_reqfile_lines(reqfile_lines):
     with NamedTemporaryFile('w') as tmp_file:
@@ -143,12 +144,51 @@ def _capture_annotated_out_reqlines(results, resolver, constraints, format_contr
     with NamedTemporaryFile(delete=False) as tmp_file:
         tmp_file_name = tmp_file.name
     try:
-        writer = OutputWriter(dst_file=tmp_file_name, annotate=True, format_control=format_control,
-                              dry_run=False, emit_header=False, emit_index=False,
-                              src_files=None, default_index_url=None, index_urls=None)
+        writer = CustomOutputWriter(src_files=None, dst_file=tmp_file_name, dry_run=False,
+                              emit_header=False, emit_index=False, emit_trusted_host=False,
+                              annotate=True, generate_hashes=False, default_index_url=None, index_urls=None,
+                              trusted_hosts=(), format_control=format_control)
         writer.write(results=results, reverse_dependencies=resolver.reverse_dependencies(results),
-                     primary_packages={ireq.req.key for ireq in constraints})
+                     primary_packages={ireq.req.key for ireq in constraints},
+                     markers={}, hashes=None)
         with open(tmp_file_name, 'r') as tmp_file:
             return tmp_file.readlines()
     finally:
         os.unlink(tmp_file_name)
+
+
+
+# This is a workaround for pip 8.1.1 and lower while the fix isn't merged: https://github.com/jazzband/pip-tools/pull/540
+# pylint: disable=too-many-arguments,wrong-import-order,wrong-import-position
+from piptools.utils import comment, key_from_req, UNSAFE_PACKAGES
+
+class CustomOutputWriter(OutputWriter):
+    def _iter_lines(self, results, reverse_dependencies, primary_packages, markers, hashes):
+        for line in self.write_header():
+            yield line
+        for line in self.write_flags():
+            yield line
+
+        unsafe_packages = {r for r in results if r.name in UNSAFE_PACKAGES}
+        packages = {r for r in results if r.name not in UNSAFE_PACKAGES}
+
+        packages = sorted(packages, key=self._sort_key)
+        unsafe_packages = sorted(unsafe_packages, key=self._sort_key)
+
+        for ireq in packages:
+            line = self._format_requirement(
+                ireq, reverse_dependencies, primary_packages,
+                markers.get(key_from_req(ireq.req)), hashes=hashes)
+            yield line
+
+        if unsafe_packages:
+            yield ''
+            yield comment('# The following packages are considered to be unsafe in a requirements file:')
+
+            for ireq in unsafe_packages:
+
+                yield self._format_requirement(ireq,
+                                               reverse_dependencies,
+                                               primary_packages,
+                                               marker=markers.get(ireq.req.name),
+                                               hashes=hashes)
