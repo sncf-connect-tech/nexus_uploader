@@ -15,7 +15,21 @@
 #
 # pylint: disable=deprecated-module
 
-from tempfile import NamedTemporaryFile, TemporaryDirectory
+from tempfile import NamedTemporaryFile
+try: # Python 3
+    from tempfile import TemporaryDirectory
+except ImportError: # Python 2
+    from contextlib import contextmanager
+    import shutil
+    from tempfile import mkdtemp
+    @contextmanager
+    def TemporaryDirectory(): # pylint: disable=invalid-name
+        tmp_dir_path = mkdtemp()
+        try:
+            yield tmp_dir_path
+        finally:
+            shutil.rmtree(tmp_dir_path)
+
 import optparse, os, pip
 from pip.download import unpack_url
 from pip.req import parse_requirements
@@ -57,7 +71,7 @@ def _pip_compile(constraints, nexus_hostname, append_egg_hash_to_url_if_need_be,
         def _iter_dependencies(self, ireq):
             # Overrides Resolver._iter_dependencies
             # We use our cached InstallRequirements that have a .link, instead of the new ones built by piptools.resolver.Resolver._iter_dependencies
-            for dep_ireq in super()._iter_dependencies(ireq):
+            for dep_ireq in super(CustomResolver, self)._iter_dependencies(ireq):
                 if str(dep_ireq.req) == 'setuptools':
                     continue
                 if str(dep_ireq.req) in dependency_links_requirements:
@@ -68,7 +82,7 @@ def _pip_compile(constraints, nexus_hostname, append_egg_hash_to_url_if_need_be,
     class CustomPyPIRepository(PyPIRepository):
         def get_dependencies(self, ireq):
             # Overrides PyPIRepository.get_dependencies
-            dependencies = set(super().get_dependencies(ireq))
+            dependencies = set(super(CustomPyPIRepository, self).get_dependencies(ireq))
             dependency_links = self.get_dependency_links(ireq)
             dependency_links = [append_egg_hash_to_url_if_need_be(url) for url in dependency_links]
             dependency_links = [url for url in dependency_links if url]
@@ -99,7 +113,7 @@ def _pip_compile(constraints, nexus_hostname, append_egg_hash_to_url_if_need_be,
             # Overrides PyPIRepository.find_all_candidates
             # We update our --find-links HTML file
             _write_find_links_html_filename(html_index_dir_path, [dep_ireq.link.url for dep_ireq in dependency_links_requirements.values()])
-            return super().find_all_candidates(req_name)
+            return super(CustomPyPIRepository, self).find_all_candidates(req_name)
 
     # Reproduce piptools.scripts.compile.cli code
     pip_options, session = _get_pip_options(['--trusted-host', nexus_hostname, '--find-links', html_index_dir_path])

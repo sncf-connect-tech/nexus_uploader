@@ -20,7 +20,10 @@
 # AUTHOR: Lucas Cimon
 
 import argparse, getpass, logging, os, sys
-from urllib.parse import urlparse
+try: # Python 2
+    from urllib.parse import urlparse
+except ImportError: # Python 2
+    from urlparse import urlparse
 from .nexus import NexusRepositoryClient
 from .pip_compile import pip_compile
 from .requirements import read_requirements, requirements2reqfile_lines, subst_editable_pkg_fallback, filter_out_provided_requirements

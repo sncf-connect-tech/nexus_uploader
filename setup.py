@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys
+import io, sys
 from os import path
 from setuptools import setup, find_packages
 
@@ -17,10 +17,10 @@ if '--snapshot' in sys.argv:
 
 here = path.abspath(path.dirname(__file__))
 
-with open(path.join(here, 'README.rst'), encoding='utf-8') as long_desc_file:
+with io.open(path.join(here, 'README.rst'), encoding='utf-8') as long_desc_file:
     long_description = long_desc_file.read()
 
-with open(path.join(here, 'requirements.txt')) as requirements_file:
+with io.open(path.join(here, 'requirements.txt')) as requirements_file:
     requirements = requirements_file.readlines()
 
 setup(
@@ -41,6 +41,7 @@ setup(
         'Natural Language :: English',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 2',
         'Operating System :: OS Independent',
         'Topic :: Utilities',
     ],
