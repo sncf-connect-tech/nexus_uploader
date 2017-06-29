@@ -23,8 +23,8 @@ def FakePypiRepository(tmpdir):
 
 class FakePackageFinder:
     format_control = FormatControl(set(), set())
-    def find_requirement(self, req, upgrade):
-        return Link(str(req)) # this URL will be passed to FakePipSession.get
+    def find_requirement(self, ireq, upgrade):
+        return Link(str(ireq)) # this URL will be passed to FakePipSession.get - we ignore extras for now
     def add_dependency_links(self, links):
         pass
 
@@ -46,11 +46,9 @@ class FakeRepository(BaseRepository):
         return self.tmpdir
 
     def __init__(self, *args, **kwargs):
-        self.session = FakePipSession(self.tmpdir)
         with open('tests/fixtures/fake-index.json', 'r') as f:
             self.index = json.load(f)
-        with open('tests/fixtures/fake-editables.json', 'r') as f:
-            self.editables = json.load(f)
+        self.session = FakePipSession(self.tmpdir, self.index)
 
     def find_best_match(self, ireq, prereleases=False):
         if ireq.editable:
@@ -60,8 +58,6 @@ class FakeRepository(BaseRepository):
         return make_install_requirement(ireq.req.key, best_version, ireq.extras)
 
     def get_dependencies(self, ireq):
-        if ireq.editable:
-            return self.editables[str(ireq.link)]
         name, version, extras = as_tuple(ireq)
         # Store non-extra dependencies under the empty string
         extras = ireq.extras + ('',)
@@ -72,14 +68,16 @@ class FakeRepository(BaseRepository):
         raise NotImplementedError # not needed
 
 class FakePipSession(PipSession):
-    def __init__(self, tmpdir):
+    def __init__(self, tmpdir, index):
         self.tmpdir = tmpdir
+        self.index = index
 
     def get(self, url, headers, stream):
         'Returns a mock valid tarball containing a single setup.py'
         assert '==' in url, '"url" should come from FakePackageFinder.find_requirement'
         pkg_name, version = url.split('==')
-        tarball_filepath = _create_pkg_tarball(self.tmpdir, pkg_name, version)
+        extra = ''
+        tarball_filepath = _create_pkg_tarball(self.tmpdir, pkg_name, version, deps=self.index[pkg_name][version][extra])
         return MockRequestsResponse(url, tarball_filepath)
 
 class MockRequestsResponse:
@@ -92,13 +90,16 @@ class MockRequestsResponse:
     def raise_for_status(self):
         pass
 
-def _create_pkg_tarball(tmpdir, pkg_name, version):
-    'Creates a tarball containing a single valid setup.py file for the (pkg_name, version) provided'
+def _create_pkg_tarball(tmpdir, pkg_name, version, deps):
+    'Creates a tarball containing a single valid setup.py file for the (pkg_name, version, deps) provided'
     tarball_basefilename = pkg_name + '-' + version
     pkg_dir = os.path.join(tmpdir, tarball_basefilename)
     os.mkdir(pkg_dir)
     with open(os.path.join(pkg_dir, 'setup.py'), 'w+') as setup_py:
-        setup_py.write("from distutils.core import setup\nsetup(name='" + pkg_name + "', version='" + version + "', url='" + pkg_name + '==' + version + "')")
+        setup_py.write('from distutils.core import setup\n')
+        setup_py.write('setup(name="' + pkg_name + '",\n')
+        setup_py.write('      version="' + version + '",\n')
+        setup_py.write('      install_requires=[' + ', '.join('"' + dep + '"' for dep in deps) + '])\n')
     tarball_filepath = os.path.join(tmpdir, tarball_basefilename + '.tar.gz')
     with tarfile.open(tarball_filepath, 'w:gz') as tar:
         tar.add(pkg_dir, arcname=os.path.basename(pkg_dir))

@@ -15,11 +15,11 @@ def test_pipcompile_with_real_repository():
 
 def test_pipcompile_with_mocked_repository(FakePypiRepository):
     with patch('nexus_uploader.pip_compile.PyPIRepository', FakePypiRepository):
-        reqs_gen = pip_compile(['pytest'],
+        reqs_gen = pip_compile(['lib1'],
                                nexus_hostname='dummy-nexus.wtf',
                                append_egg_hash_to_url_if_need_be=raise_if_called)
         assert read_requirements(reqs_gen) == \
-            [('version-locked', ('py', '1.4.31', 'via pytest')), ('version-locked', ('pytest', '3.0.2', ''))]
+            [('version-locked', ('lib1', '1.2.3', '')), ('version-locked', ('lib2', '4.5.7', 'via lib1'))]
 
 
 def raise_if_called(*args, **kwargs):
