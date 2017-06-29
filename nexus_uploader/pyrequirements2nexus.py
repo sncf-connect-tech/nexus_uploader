@@ -61,7 +61,7 @@ def parse_args(argv):
     parser.add_argument('--artifact-group', required=True, help=' ')
     parser.add_argument('--repo-id', default='pip', help=' ')
     parser.add_argument('--pypi-json-api-url', default='http://pypi.python.org/pypi/{}/json', help=' ')
-    parser.add_argument('--allowed-pkg-classifiers', type=lambda s: s.split(',') if s else [], default='py3-none-any', help='Comma-seperated list')
+    parser.add_argument('--allowed-pkg-classifiers', type=lambda s: tuple(s.split(',')) if s else (), help='Comma-separated list')
     parser.add_argument('--default-packages', help='File containing a requirements.txt-style list of Python packages already included in the base environment')
     parser.add_argument('--user', help='A prompt will ask for your password - Else use environment variables REPOSITORY_USER / REPOSITORY_PASSWORD')
     parser.add_argument('--in-reqfile', default='requirements.txt')
@@ -75,6 +75,8 @@ def parse_args(argv):
             parser.error('Repository user not specified. Please use the interactive --user option or define the environment variables REPOSITORY_USER / REPOSITORY_PASSWORD')
         args.user = os.environ['REPOSITORY_USER']
         args.password = os.environ['REPOSITORY_PASSWORD']
+    if not args.allowed_pkg_classifiers:
+        args.allowed_pkg_classifiers = ('py2.py3-none-any', 'py{}-none-any'.format(sys.version_info[0]))
     return args
 
 if __name__ == '__main__':

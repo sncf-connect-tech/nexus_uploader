@@ -18,6 +18,8 @@
 
 import requests
 
+from .utils import aslist
+
 
 class PypiQueryError(Exception):
     pass
@@ -76,3 +78,11 @@ def extract_classifier_and_extension(pkg_name, filename):
     if len(classifier_parts) == 3:
         _, _, classifier_parts[0] = classifier_parts[0].rpartition('.')
     return '-'.join(classifier_parts[-3:]), extension
+
+@aslist
+def filter_allowed_pkg_urls_for_classifiers(pkg_urls, allowed_pkg_classifiers):
+    for pkg_url in pkg_urls:
+        pkg_name, pkg_filename = pkg_url.split('/')[-3], pkg_url.split('/')[-1]
+        classifier, _ = extract_classifier_and_extension(pkg_name, pkg_filename)
+        if classifier in allowed_pkg_classifiers:
+            yield pkg_url

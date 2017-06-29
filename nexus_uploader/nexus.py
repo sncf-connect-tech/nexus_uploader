@@ -18,14 +18,14 @@
 
 import logging, re, requests
 
-from .pypi import get_package_release_from_pypi
+from .pypi import get_package_release_from_pypi, filter_allowed_pkg_urls_for_classifiers
 from .utils import aslist
 
 
 logger = logging.getLogger(__name__)
 
 
-class NexusRepositoryClient:
+class NexusRepositoryClient(object):
     """
     Heavily inspired by stardust85/repositorytools repository.NexusRepositoryClient._upload_artifact
     API details: https://repository.sonatype.org/nexus-restlet1x-plugin/default/docs/rest.html
@@ -39,19 +39,22 @@ class NexusRepositoryClient:
 
     def upload_from_pypi_if_need_be(self, pkg_name, pkg_version, pypi_json_api_url, allowed_pkg_classifiers):
         logger.debug('Checking for Python package %s version %s in Nexus', pkg_name, pkg_version)
-        matching_artifacts = self.find_artifacts(pkg_name, pkg_version)
-        if matching_artifacts:
+        matching_pkg_urls = self.find_artifacts(pkg_name, pkg_version, allowed_pkg_classifiers)
+        if matching_pkg_urls:
             logger.info('Skipping Python package %s version %s - the following artifacts are already in Nexus : %s',
-                pkg_name, pkg_version, ','.join(url.split('/')[-1] for url in matching_artifacts))
-            if len(matching_artifacts) > 1:
-                raise NotImplementedError('Classifier-based selection of Python packages is not implemented yet.\n'
-                                          'Several matching artifacts found in Nexus: {}'.format(matching_artifacts))
-            return matching_artifacts[0]
+                pkg_name, pkg_version, ','.join(url.split('/')[-1] for url in matching_pkg_urls))
+            if len(matching_pkg_urls) == 1:
+                return matching_pkg_urls[0]
+            source_pkg_urls = [url for url in matching_pkg_urls if url.endswith('.tar.gz')]
+            if len(source_pkg_urls) == 1:
+                return source_pkg_urls[0]
+            raise NotImplementedError('Classifier-based selection of Python packages is not implemented yet.\n'
+                                      'Several matching artifacts found in Nexus: {}'.format(matching_pkg_urls))
         else:
             logger.debug('Retrieving release for Python package %s version %s from Pypi', pkg_name, pkg_version)
             pkg_release = get_package_release_from_pypi(pkg_name, pkg_version, pypi_json_api_url, allowed_pkg_classifiers)
 
-            response = requests.get(pkg_release['url'])
+            response = self._session.get(pkg_release['url'])
             response.raise_for_status()
             pkg_binary = response.content
 
@@ -72,13 +75,15 @@ class NexusRepositoryClient:
         artifact_nexus_filename = self.get_artifact_filename(pkg_name, version, classifier, extension)
         return '{}/{}'.format(self.get_artifact_url_dir(pkg_name, version), artifact_nexus_filename)
 
-    def find_artifacts(self, name, version):
+    def find_artifacts(self, name, version, allowed_pkg_classifiers):
         url = self.get_artifact_url_dir(name, version)
         response = self._session.get(url)
         if response.status_code == 404:
             return []
         response.raise_for_status()
-        return self._extract_artifacts_url(url, response.text)
+        pkg_urls = self._extract_artifacts_url(url, response.text)
+        urls = filter_allowed_pkg_urls_for_classifiers(pkg_urls, allowed_pkg_classifiers)
+        return urls
 
     @staticmethod
     def pkg_name_version_from_artifact_url(artifact_url):
