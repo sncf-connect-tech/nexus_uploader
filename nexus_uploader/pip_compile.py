@@ -63,7 +63,8 @@ def _pip_compile(constraints, nexus_hostname, append_egg_hash_to_url_if_need_be,
     dependency_links_requirements = {str(c.req): c for c in constraints if c.link}
 
     class CustomResolver(Resolver):
-        def _check_constraints(self):
+        @staticmethod
+        def check_constraints(constraints):
             # Overrides Resolver._check_constraints
             # We allow non-editable URLs as packages
             pass
