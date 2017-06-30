@@ -61,7 +61,7 @@ def parse_args(argv):
     parser.add_argument('--artifact-group', required=True, help=' ')
     parser.add_argument('--repo-id', default='pip', help=' ')
     parser.add_argument('--pypi-json-api-url', default='http://pypi.python.org/pypi/{}/json', help=' ')
-    parser.add_argument('--allowed-pkg-classifiers', type=lambda s: tuple(s.split(',')) if s else (), help='Comma-separated list')
+    parser.add_argument('--allowed-pkg-classifiers', type=lambda s: tuple(s.split(',')) if s else (), help='Comma-separated list. Default classifiers depends on current Python interpreter. E.g. for Python 3: py2.py3-none-any,py3-none-any')
     parser.add_argument('--default-packages', help='File containing a requirements.txt-style list of Python packages already included in the base environment')
     parser.add_argument('--user', help='A prompt will ask for your password - Else use environment variables REPOSITORY_USER / REPOSITORY_PASSWORD')
     parser.add_argument('--in-reqfile', default='requirements.txt')
