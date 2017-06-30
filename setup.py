@@ -4,7 +4,7 @@ import io, sys
 from os import path
 from setuptools import setup, find_packages
 
-version = '1.0.9'
+version = '1.0.10'
 setup_requires = []
 
 if 'nexus_upload' in sys.argv:
@@ -17,8 +17,12 @@ if '--snapshot' in sys.argv:
 
 here = path.abspath(path.dirname(__file__))
 
-with io.open(path.join(here, 'README.rst'), encoding='utf-8') as long_desc_file:
-    long_description = long_desc_file.read()
+# Using .rst as long as Markdown is not properly supported by pypi/warehouse :( -> https://github.com/pypa/warehouse/issues/869
+with io.open(path.join(here, 'README.rst'), encoding='utf-8') as readme_file:
+    readme = readme_file.read()
+
+with io.open(path.join(here, 'CHANGELOG.md'), encoding='utf-8') as changelog_file:
+    changelog = changelog_file.read()
 
 with io.open(path.join(here, 'requirements.txt')) as requirements_file:
     requirements = requirements_file.readlines()
@@ -26,7 +30,7 @@ with io.open(path.join(here, 'requirements.txt')) as requirements_file:
 setup(
     name='nexus_uploader',
     description='CLI tool to upload Python packages listed in a requirements.txt file into a Sonatype Nexus (from Pypi), and return the list of the artifact URLs',
-    long_description=long_description,
+    long_description=readme + '\n\n' + changelog,
     author='Lucas Cimon',
     url='http://github.com/voyages-sncf-technologies/nexus_uploader',
     install_requires=requirements,
