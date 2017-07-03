@@ -51,7 +51,7 @@ def select_src_release(src_releases, pkg_name, target_classifiers, select_arbitr
 def get_package_releases_matching_version(pkg_name, version, pypi_json_api_url):
     releases = get_package_releases(pkg_name, pypi_json_api_url)
     if version not in releases:
-        raise PypiQueryError('Version {} of package {} not found in Pypi. Available versions: {}', version, pkg_name, ','.join(releases.keys()))
+        raise PypiQueryError('Version {} of package {} not found in Pypi. Available versions: {}'.format(version, pkg_name, ','.join(sorted(releases.keys()))))
     return releases[version]
 
 def get_package_releases(pkg_name, pypi_json_api_url):
