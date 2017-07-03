@@ -19,10 +19,22 @@ here = path.abspath(path.dirname(__file__))
 
 # Using .rst as long as Markdown is not properly supported by pypi/warehouse :( -> https://github.com/pypa/warehouse/issues/869
 with io.open(path.join(here, 'README.rst'), encoding='utf-8') as readme_file:
-    readme = readme_file.read()
+    rst_readme = readme_file.read()
+
+def md2rst(md_lines):
+    lvl2header_char = {1: '=', 2: '-', 3: '~'}
+    for md_line in md_lines:
+        if md_line.startswith('#'):
+            header_indent, header_text = md_line.split(' ', 1)
+            yield header_text
+            header_char = lvl2header_char[len(header_indent)]
+            yield header_char * len(header_text)
+        else:
+            yield md_line
 
 with io.open(path.join(here, 'CHANGELOG.md'), encoding='utf-8') as changelog_file:
-    changelog = changelog_file.read()
+    md_changelog = changelog_file.read()
+rst_changelog = '\n'.join(md2rst(md_changelog.splitlines()))
 
 with io.open(path.join(here, 'requirements.txt')) as requirements_file:
     requirements = requirements_file.readlines()
@@ -30,8 +42,9 @@ with io.open(path.join(here, 'requirements.txt')) as requirements_file:
 setup(
     name='nexus_uploader',
     description='CLI tool to upload Python packages listed in a requirements.txt file into a Sonatype Nexus (from Pypi), and return the list of the artifact URLs',
-    long_description=readme + '\n\n' + changelog,
+    long_description=rst_readme + '\n\n' + rst_changelog,
     author='Lucas Cimon',
+    author_email='lucas.cimon...AT...gmail.com',
     url='http://github.com/voyages-sncf-technologies/nexus_uploader',
     install_requires=requirements,
     packages=find_packages(),
