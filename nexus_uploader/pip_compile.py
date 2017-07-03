@@ -60,7 +60,7 @@ def pip_compile(reqfile_lines, nexus_hostname, append_egg_hash_to_url_if_need_be
 
 @aslist
 def _pip_compile(constraints, nexus_hostname, append_egg_hash_to_url_if_need_be, html_index_dir_path):
-    dependency_links_requirements = {str(c.req): c for c in constraints if c.link}
+    dependency_links_requirements = {str(c.req).lower(): c for c in constraints if c.link}
 
     class CustomResolver(Resolver):
         @staticmethod
@@ -129,8 +129,9 @@ def _pip_compile(constraints, nexus_hostname, append_egg_hash_to_url_if_need_be,
         if ' #' in requirement and not requirement.startswith('#'):
             requirement, eol_comment = requirement.split(' #')
         requirement, eol_comment = requirement.strip(), eol_comment.strip()
-        if requirement in dependency_links_requirements:
-            yield dependency_links_requirements[requirement].link.url + (' # ' + eol_comment if eol_comment else '')
+        # !warning! piptools OutwputWriter now lowercases versions
+        if requirement.lower() in dependency_links_requirements:
+            yield dependency_links_requirements[requirement.lower()].link.url + (' # ' + eol_comment if eol_comment else '')
         else:
             yield requirement + (' # ' + eol_comment if eol_comment else '')
 
