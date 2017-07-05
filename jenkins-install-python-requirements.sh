@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Wrapper around pyrequirements2nexus.py to be used in a Jenkins build job.
+# Wrapper around pyRequirements2nexus to be used in a Jenkins build job.
 # Consume requirements.txt in the current directory.
 
 # USAGE:
@@ -25,5 +25,3 @@ fi
 pip install --upgrade nexus_uploader
 
 pyRequirements2nexus --debug --nexus-url=http://nexus --artifact-group 'com.vsct.pip' --default-packages "$DEFAULTS_PKGS_FILE" --in-reqfile requirements.txt --out-reqfile nexus-requirements.txt
-
-pip install setuptools==18.2 # old versions of setuptools trigger a distutils.errors.DistutilsError (hostname doesn't match either of ...)

@@ -24,6 +24,8 @@ It is composed of 2 distincts :
 Features
 ========
 
+- fully compatible Python 2 & 3
+
 nexus\_uploader features
 ------------------------
 
@@ -39,6 +41,7 @@ pyRequirements2nexus features
    Nexus host, not to the Internet
 -  support ``-e`` editable packages in ``requirements.txt``
 -  support package URL fallbacks as comments in ``requirements.txt``
+-  can select only Python 2 packages with `--allowed-pkg-classifiers py2.py3-none-any,py2-none-any`
 -  a list of packages already included in the base environment can be
    specified (e.g. if you are using Anaconda), so that they will be
    excluded from the final ``nexus-requirements.txt``
@@ -202,7 +205,6 @@ Tip for easily removing packages from your nexus
 ToDo
 ====
 
--  Python 2 support
 -  detect if package releases on Pypi require gcc compilation (are they
    using setuptools/distutils ``Extension`` in ``setup.py`` ?)
 -  classifier-based selection of Python packages

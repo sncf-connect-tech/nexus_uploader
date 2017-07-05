@@ -15,13 +15,14 @@ if '--snapshot' in sys.argv:
     sys.argv.remove('--snapshot')
     version += '-SNAPSHOT'
 
-here = path.abspath(path.dirname(__file__))
+parent_dir = path.abspath(path.dirname(__file__))
 
 # Using .rst as long as Markdown is not properly supported by pypi/warehouse :( -> https://github.com/pypa/warehouse/issues/869
-with io.open(path.join(here, 'README.rst'), encoding='utf-8') as readme_file:
+with io.open(path.join(parent_dir, 'README.rst'), encoding='utf-8') as readme_file:
     rst_readme = readme_file.read()
 
 def md2rst(md_lines):
+    'Only converts headers'
     lvl2header_char = {1: '=', 2: '-', 3: '~'}
     for md_line in md_lines:
         if md_line.startswith('#'):
@@ -32,11 +33,11 @@ def md2rst(md_lines):
         else:
             yield md_line
 
-with io.open(path.join(here, 'CHANGELOG.md'), encoding='utf-8') as changelog_file:
+with io.open(path.join(parent_dir, 'CHANGELOG.md'), encoding='utf-8') as changelog_file:
     md_changelog = changelog_file.read()
 rst_changelog = '\n'.join(md2rst(md_changelog.splitlines()))
 
-with io.open(path.join(here, 'requirements.txt')) as requirements_file:
+with io.open(path.join(parent_dir, 'requirements.txt')) as requirements_file:
     requirements = requirements_file.readlines()
 
 setup(
