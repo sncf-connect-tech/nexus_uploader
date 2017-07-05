@@ -84,7 +84,13 @@ def _pip_compile(constraints, nexus_hostname, append_egg_hash_to_url_if_need_be,
         def get_dependencies(self, ireq):
             # Overrides PyPIRepository.get_dependencies
             dependencies = set(super(CustomPyPIRepository, self).get_dependencies(ireq))
-            dependency_links = self.get_dependency_links(ireq)
+            dist = self.get_dist(ireq)
+            dep_links_ireqs = self.get_dep_links_ireqs(dist)
+            return dependencies | dep_links_ireqs
+
+        def get_dep_links_ireqs(self, dist):
+            # pylint: disable=protected-access
+            dependency_links = list(dist._get_metadata('dependency_links.txt'))
             dependency_links = [append_egg_hash_to_url_if_need_be(url) for url in dependency_links]
             dependency_links = [url for url in dependency_links if url]
             dep_links_ireqs = set(InstallRequirement.from_line(url) for url in dependency_links)
@@ -92,9 +98,9 @@ def _pip_compile(constraints, nexus_hostname, append_egg_hash_to_url_if_need_be,
             for dep_ireq in dep_links_ireqs:
                 dep_ireq.remove_temporary_source()
                 dependency_links_requirements[str(dep_ireq.req)] = dep_ireq
-            return dependencies | dep_links_ireqs
+            return dep_links_ireqs
 
-        def get_dependency_links(self, ireq):
+        def get_dist(self, ireq):
             # Reproduce pip.req.req_set.RequirementSet._prepare_file code
             ireq.check_if_exists()
             if ireq.satisfied_by is not None:
@@ -105,10 +111,8 @@ def _pip_compile(constraints, nexus_hostname, append_egg_hash_to_url_if_need_be,
                 assert ireq.link
                 unpack_url(ireq.link, ireq.source_dir, self._download_dir, only_download=True, session=self.session)
                 abstract_dist = make_abstract_dist(ireq)
-            abstract_dist.prep_for_dist()
-            dist = abstract_dist.dist(self.finder)
-            # pylint: disable=protected-access
-            return list(dist._get_metadata('dependency_links.txt'))
+                abstract_dist.prep_for_dist()
+            return abstract_dist.dist(self.finder)
 
         def find_all_candidates(self, req_name):
             # Overrides PyPIRepository.find_all_candidates
