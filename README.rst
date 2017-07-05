@@ -8,7 +8,7 @@ It was developped to use Sonatype Nexus as a private Pypi mirror (until
 natively <https://issues.sonatype.org/browse/NEXUS-6037>`__), but should
 be adaptable to any repository supporting artifact upload with HTTP.
 
-It is composed of 2 distincts :
+It is composed of 2 distincts tools :
 
 -  ``nexus_uploader`` : a simple module to be used as a
    ``setup_requires`` entry in ``setup.py``, in order to easily upload
@@ -17,6 +17,14 @@ It is composed of 2 distincts :
    ``requirements.txt`` into ``nexus-requirements.txt`` files, made of
    URLs pointing to installable packages that ``pyRequirements2nexus``
    mirrored on your Nexus.
+
+Table of Contents
+================
+
+.. contents::
+
+Workflow diagram
+================
 
 .. figure:: https://raw.githubusercontent.com/voyages-sncf-technologies/nexus_uploader/master/docs/PythonPackaging.png
    :alt:
