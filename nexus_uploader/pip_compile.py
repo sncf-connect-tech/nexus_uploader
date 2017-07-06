@@ -88,7 +88,8 @@ def _pip_compile(constraints, nexus_hostname, append_egg_hash_to_url_if_need_be,
             dep_links_ireqs = self.get_dep_links_ireqs(dist)
             return dependencies | dep_links_ireqs
 
-        def get_dep_links_ireqs(self, dist):
+        @staticmethod
+        def get_dep_links_ireqs(dist):
             # pylint: disable=protected-access
             dependency_links = list(dist._get_metadata('dependency_links.txt'))
             dependency_links = [append_egg_hash_to_url_if_need_be(url) for url in dependency_links]
