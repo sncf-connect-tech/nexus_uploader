@@ -4,7 +4,7 @@ import io, sys
 from os import path
 from setuptools import setup, find_packages
 
-version = '1.0.13'
+version = '1.0.14'
 setup_requires = []
 
 if 'nexus_upload' in sys.argv:
