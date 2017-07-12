@@ -71,7 +71,8 @@ def subst_editable_pkg_fallback(requirement):
 
 @aslist
 def filter_out_provided_requirements(requirements, provided_requirements):
-    provided_requirements = {name: version for req_type, (name, version, comment) in provided_requirements if req_type == 'version-locked'}
+    version_locked_reqs = [(req_type, req_info) for req_type, req_info in provided_requirements if req_type == 'version-locked']
+    provided_requirements = {name: version for req_type, (name, version, comment) in version_locked_reqs}
     for req_type, req_info in requirements:
         if req_type != 'version-locked':
             yield req_type, req_info
