@@ -62,6 +62,8 @@ setup(
         'Programming Language :: Python :: 2',
         'Operating System :: OS Independent',
         'Topic :: Utilities',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+        'Topic :: System :: Archiving :: Packaging',
     ],
     keywords='nexus artifacts packages upload requirements pip-compile',
     license='Apache License 2.0',
