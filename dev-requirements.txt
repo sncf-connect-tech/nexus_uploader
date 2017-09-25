@@ -1,3 +1,4 @@
+-e .
 mock # for Python 2
 pre-commit
 pytest==3.0.2
