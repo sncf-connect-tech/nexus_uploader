@@ -39,7 +39,7 @@ from pip.download import PipSession
 from piptools.scripts.compile import PipCommand
 from piptools.repositories import LocalRequirementsRepository, PyPIRepository
 from piptools.resolver import Resolver
-from piptools.utils import assert_compatible_pip_version
+from piptools.utils import assert_compatible_pip_version, key_from_ireq
 from piptools.writer import OutputWriter
 
 from .utils import aslist
@@ -165,51 +165,15 @@ def _capture_annotated_out_reqlines(results, resolver, constraints, format_contr
     with NamedTemporaryFile(delete=False) as tmp_file:
         tmp_file_name = tmp_file.name
     try:
-        writer = CustomOutputWriter(src_files=None, dst_file=tmp_file_name, dry_run=False,
+        writer = OutputWriter(src_files=None, dst_file=tmp_file_name, dry_run=False,
                               emit_header=False, emit_index=False, emit_trusted_host=False,
                               annotate=True, generate_hashes=False, default_index_url=None, index_urls=None,
                               trusted_hosts=(), format_control=format_control)
         writer.write(results=results, reverse_dependencies=resolver.reverse_dependencies(results),
-                     primary_packages={ireq.req.key for ireq in constraints},
+                     unsafe_requirements=resolver.unsafe_constraints,
+                     primary_packages={key_from_ireq(ireq) for ireq in constraints},
                      markers={}, hashes=None)
         with open(tmp_file_name, 'r') as tmp_file:
             return tmp_file.readlines()
     finally:
         os.unlink(tmp_file_name)
-
-
-
-# This is a workaround for pip 8.1.1 and lower while the fix isn't merged: https://github.com/jazzband/pip-tools/pull/540
-# pylint: disable=too-many-arguments,wrong-import-order,wrong-import-position
-from piptools.utils import comment, key_from_req, UNSAFE_PACKAGES
-
-class CustomOutputWriter(OutputWriter):
-    def _iter_lines(self, results, reverse_dependencies, primary_packages, markers, hashes):
-        for line in self.write_header():
-            yield line
-        for line in self.write_flags():
-            yield line
-
-        unsafe_packages = {r for r in results if r.name in UNSAFE_PACKAGES}
-        packages = {r for r in results if r.name not in UNSAFE_PACKAGES}
-
-        packages = sorted(packages, key=self._sort_key)
-        unsafe_packages = sorted(unsafe_packages, key=self._sort_key)
-
-        for ireq in packages:
-            line = self._format_requirement(
-                ireq, reverse_dependencies, primary_packages,
-                markers.get(key_from_req(ireq.req)), hashes=hashes)
-            yield line
-
-        if unsafe_packages:
-            yield ''
-            yield comment('# The following packages are considered to be unsafe in a requirements file:')
-
-            for ireq in unsafe_packages:
-
-                yield self._format_requirement(ireq,
-                                               reverse_dependencies,
-                                               primary_packages,
-                                               marker=markers.get(ireq.req.name),
-                                               hashes=hashes)

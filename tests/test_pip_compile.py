@@ -15,7 +15,8 @@ def test_pipcompile_with_real_repository():
     reqs_gen = pip_compile(['nexus_uploader'],
                            nexus_hostname='dummy-nexus.wtf',
                            append_egg_hash_to_url_if_need_be=raise_if_called)
-    assert len(read_requirements(reqs_gen)) == 6
+    requirements_read = read_requirements(reqs_gen)
+    assert len(requirements_read) == 10
 
 
 def test_pipcompile_with_mocked_repository(FakePypiRepository):
@@ -33,7 +34,7 @@ def test_pipcompile_conflicting_dependencies():
         pip_compile(['nexus_uploader==1.0.0','nexus_uploader==1.0.1'],
                     nexus_hostname='dummy-nexus.wtf',
                     append_egg_hash_to_url_if_need_be=raise_if_called)
-    assert 'Could not find a version that matches nexus-uploader==1.0.0,==1.0.1' in str(excinfo.value)
+    assert 'Could not find a version that matches nexus_uploader==1.0.0,==1.0.1' in str(excinfo.value)
 
 
 def raise_if_called(*args, **kwargs):

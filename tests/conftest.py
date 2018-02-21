@@ -6,7 +6,7 @@ from pip.req import InstallRequirement
 from pip.download import PipSession
 
 from piptools.repositories.base import BaseRepository
-from piptools.utils import as_tuple, make_install_requirement
+from piptools.utils import as_tuple, key_from_ireq, make_install_requirement
 
 import pytest
 
@@ -53,18 +53,22 @@ class FakeRepository(BaseRepository):
     def find_best_match(self, ireq, prereleases=False):
         if ireq.editable:
             return ireq
-        versions = ireq.specifier.filter(self.index[ireq.req.key], prereleases=prereleases)
+        versions = ireq.specifier.filter(self.index[key_from_ireq(ireq)], prereleases=prereleases)
         best_version = max(versions, key=Version)
-        return make_install_requirement(ireq.req.key, best_version, ireq.extras)
+        return make_install_requirement(key_from_ireq(ireq), best_version, ireq.extras)
 
     def get_dependencies(self, ireq):
         name, version, extras = as_tuple(ireq)
         # Store non-extra dependencies under the empty string
-        extras = ireq.extras + ('',)
+        extras = set(ireq.extras)
+        extras.add('')
         dependencies = [dep for extra in extras for dep in self.index[name][version][extra]]
         return [InstallRequirement.from_line(dep) for dep in dependencies]
 
     def get_hashes(self, ireq):
+        raise NotImplementedError # not needed
+
+    def allow_all_wheels(self):
         raise NotImplementedError # not needed
 
 class FakePipSession(PipSession):
