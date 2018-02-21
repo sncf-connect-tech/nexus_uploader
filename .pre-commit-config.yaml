@@ -29,5 +29,5 @@
     -   id: py.test
         name: py.test
         language: system
-        entry: sh -c py.test
+        entry: sh -c "py.test --run-pypi-integration-tests"
         files: ''
