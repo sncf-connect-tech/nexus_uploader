@@ -40,21 +40,29 @@ def read_requirements(reqfile_lines):
             elif '==' in requirement:
                 pkg_name, pkg_version = requirement.split('==')
                 yield 'version-locked', (pkg_name.strip(), pkg_version.strip(), comment)
-            else:
+            elif ',' in requirement:
                 raise RequirementError('Unsupported requirement format: {}'.format(line))
+            else:
+                pkg_name, comment, pkg_version = re.split(r'([<>]=?)', requirement)
+                yield 'lower-greater-version', (pkg_name.strip(), pkg_version.strip(), comment)
 
 @aslist
 def requirements2reqfile_lines(requirements):
     for req_type, req_info in requirements:
         if req_type == 'url':
             url, comment = req_info
-            yield url + ' # ' + comment
+            yield url + (' # ' + comment if comment else '')
         elif req_type == 'editable':
             local_path, comment = req_info
-            yield '-e ' + local_path + ' # ' + comment
+            yield '-e ' + local_path + (' # ' + comment if comment else '')
         elif req_type == 'version-locked':
             pkg_name, pkg_version, comment = req_info
-            yield pkg_name + '==' + pkg_version + ' # ' + comment
+            yield pkg_name + '==' + pkg_version + (' # ' + comment if comment else '')
+        elif req_type == 'lower-greater-version':
+            pkg_name, pkg_version, comment = req_info
+            yield pkg_name + comment + pkg_version
+        else:
+            raise RequirementError('Unsupported requirement format: {}'.format(req_type))
 
 def subst_editable_pkg_fallback(requirement):
     req_type, req_info = requirement
