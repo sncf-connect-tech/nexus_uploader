@@ -1,5 +1,6 @@
+repos:
 -   repo: git://github.com/pre-commit/pre-commit-hooks
-    sha: v0.7.0
+    sha: v1.2.1
     hooks:
     -   id: check-merge-conflict
     # for Python:
@@ -10,14 +11,14 @@
         args:
         - --no-markdown-linebreak-ext
 -   repo: git://github.com/Lucas-C/pre-commit-hooks
-    sha: v1.0.1
+    sha: v1.1.4
     hooks:
     -   id: remove-crlf
         exclude: .png$
     -   id: remove-tabs
         exclude: .png$
 -   repo: git://github.com/pre-commit/mirrors-pylint
-    sha: v1.7.1
+    sha: v1.8.2
     hooks:
     -   id: pylint
         args:
