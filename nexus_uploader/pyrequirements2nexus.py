@@ -26,7 +26,7 @@ except ImportError: # Python 2
     from urlparse import urlparse
 from .nexus import NexusRepositoryClient
 from .pip_compile import pip_compile
-from .requirements import read_requirements, requirements2reqfile_lines, subst_editable_pkg_fallback, filter_out_provided_requirements
+from .requirements import read_requirements, requirements2reqfile_lines, subst_editable_pkg_fallback, filter_out_provided_requirements, RequirementError
 
 
 def main(argv=None):
@@ -53,6 +53,8 @@ def main(argv=None):
                 pkg_name, pkg_version, comment = req_info
                 nexus_artifact_url = nexus_client.upload_from_pypi_if_need_be(pkg_name, pkg_version, args.pypi_json_api_url, args.allowed_pkg_classifiers)
                 out_reqfile_content.write(nexus_artifact_url + (' # ' + comment if comment else '') + '\n')
+            else:
+                raise RequirementError('Unsupported requirement format: {} {}'.format(req_type, req_info))
 
 def parse_args(argv):
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
