@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.16] - 2018-04-09
+### Fixed
+- support for X.Y.Z-SNAPSHOT (uppercase) package versions
+
 ## [1.0.15] - 2018-02-21
 ### Added
 - Now supporting unlocked versions using `>=` / `<=` / `>` / `<` specifiers

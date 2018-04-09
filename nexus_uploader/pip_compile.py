@@ -99,6 +99,13 @@ def _pip_compile(constraints, nexus_hostname, append_egg_hash_to_url_if_need_be,
             for dep_ireq in dep_links_ireqs:
                 dep_ireq.remove_temporary_source()
                 dependency_links_requirements[str(dep_ireq.req)] = dep_ireq
+                if str(dep_ireq.req).lower() != str(dep_ireq.req):
+                    # This is required for dependencies with a version like X.Y.Z-SNAPSHOT (notice the uppercase).
+                    # They need to exist BOTH as key in this dict, otherwise:
+                    # * if only the lowercase is there, `get_dependencies` raise a pip.exceptions.DistributionNotFound
+                    # * if only the uppercase is there, an erroneous "version-locked" pkg version gets out of this module, and we get a:
+                    # requests.exceptions.HTTPError: 404 Client Error: Not Found (no releases) for url: https://pypi.python.org/pypi/$pkg/json
+                    dependency_links_requirements[str(dep_ireq.req).lower()] = dep_ireq
             return dep_links_ireqs
 
         def get_dist(self, ireq):
