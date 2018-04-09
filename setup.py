@@ -4,7 +4,7 @@ import io, sys
 from os import path
 from setuptools import setup, find_packages
 
-version = '1.0.15'
+version = '1.0.16'
 setup_requires = []
 
 if 'nexus_upload' in sys.argv:
@@ -45,7 +45,7 @@ setup(
     description='CLI tool to upload Python packages listed in a requirements.txt file into a Sonatype Nexus (from Pypi), and return the list of the artifact URLs',
     long_description=rst_readme + '\n\n' + rst_changelog,
     author='Lucas Cimon',
-    author_email='lucas.cimon+pypi@@gmail.com',
+    author_email='lucas.cimon+pypi@gmail.com',
     url='http://github.com/voyages-sncf-technologies/nexus_uploader',
     install_requires=requirements,
     packages=find_packages(),
