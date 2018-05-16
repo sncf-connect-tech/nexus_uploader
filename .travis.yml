@@ -7,9 +7,9 @@ python:
   - "3.7-dev"
 env:
   matrix:
-    - PIP_VERSION=8.1.2
-    - PIP_VERSION=9.0.3
+    - VERSION_FOR_PIP=8.1.2
+    - VERSION_FOR_PIP=9.0.3
 install:
   - pip install -r dev-requirements.txt
-  - pip install pip==$PIP_VERSION
+  - pip install pip==$VERSION_FOR_PIP
 script: pre-commit run --all-files
