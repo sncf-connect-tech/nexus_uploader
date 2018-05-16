@@ -5,5 +5,11 @@ python:
 # https://snarky.ca/how-to-use-your-project-travis-to-help-test-python-itself/
   - "3.6-dev"
   - "3.7-dev"
-install: pip install -r dev-requirements.txt
+env:
+  matrix:
+    - PIP_VERSION=8.1.2
+    - PIP_VERSION=9.0.3
+install:
+  - pip install -r dev-requirements.txt
+  - pip install pip==$PIP_VERSION
 script: pre-commit run --all-files

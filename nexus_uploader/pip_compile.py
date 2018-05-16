@@ -109,7 +109,7 @@ def _pip_compile(constraints, nexus_hostname, append_egg_hash_to_url_if_need_be,
             return dep_links_ireqs
 
         def get_dist(self, ireq):
-            # Reproduce pip.req.req_set.RequirementSet._prepare_file code
+            # Reproduce pip.req.req_set.RequirementSet._prepare_file code, called by RequirementSet.prepare_files
             ireq.check_if_exists()
             if ireq.satisfied_by is not None:
                 abstract_dist = Installed(ireq)
