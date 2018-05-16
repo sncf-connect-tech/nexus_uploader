@@ -4,7 +4,8 @@ python:
   - "3.6"
 # https://snarky.ca/how-to-use-your-project-travis-to-help-test-python-itself/
   - "3.6-dev"
-  - "3.7-dev"
+# Disabling 3.7-dev while this pyyaml issue is not closed: [Cannot install/build on Python 3.7-dev](https://github.com/yaml/pyyaml/issues/126)
+  # - "3.7-dev"
 env:
   matrix:
     - VERSION_FOR_PIP=8.1.2

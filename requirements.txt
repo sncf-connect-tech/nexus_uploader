@@ -1,4 +1,4 @@
-# pip-tools currently has no release supporting pip 10 (pending https://github.com/jazzband/pip-tools/commit/4e872f1)
+# [LCM 2018/05/16] pip-tools does not currently support pip 10 (pending release of https://github.com/jazzband/pip-tools/commit/4e872f1 at least)
 # hence we do not support it:
 pip>=8.1.1,<=9.0.3
 pip-tools>=1.10.0,<=1.11.0
