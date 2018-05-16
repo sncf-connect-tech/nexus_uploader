@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.17] - 2018-05-16
+### Fixed
+- Using HTTPS url to connect to Pypi by default to avoid "HTTPError: 403 Client Error: SSL is required"
+
 ## [1.0.16] - 2018-04-09
 ### Fixed
 - support for X.Y.Z-SNAPSHOT (uppercase) package versions
