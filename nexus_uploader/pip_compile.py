@@ -156,6 +156,7 @@ def _constraints_from_reqfile_lines(reqfile_lines):
 def _get_pip_options(pip_args):
     # Reproduce piptools.scripts.compile.cli code
     pip_command = PipCommand()
+    # pylint: disable=no-member
     pip.cmdoptions.make_option_group(pip.cmdoptions.index_group, pip_command.parser)
     pip_command.parser.add_option(optparse.Option('--pre', action='store_true', default=False))
     pip_options, _ = pip_command.parse_args(pip_args)
